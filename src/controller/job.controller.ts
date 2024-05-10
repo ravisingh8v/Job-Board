@@ -33,13 +33,14 @@ export async function getJobList(req: Request, res: Response) {
     maxPackage,
     minExperience,
     maxExperience,
+    searchText,
     ...query
   } = req.query;
 
+  let newQueryObj: any = {};
   let sort = sortBy == "asc" ? -1 : 1;
   let salaryRange = {};
   let experience = {};
-  let newQueryObj: any = {};
 
   if (query) {
     const queryKey = Object.keys(query);
@@ -51,8 +52,6 @@ export async function getJobList(req: Request, res: Response) {
       }
     });
   }
-
-  console.log(newQueryObj);
 
   if (minExperience && maxExperience) {
     experience = {
@@ -69,7 +68,13 @@ export async function getJobList(req: Request, res: Response) {
   }
 
   try {
-    const jobList = await getJobs(newQueryObj, sort, salaryRange, experience);
+    const jobList = await getJobs(
+      newQueryObj,
+      sort,
+      salaryRange,
+      experience,
+      searchText
+    );
     if (!jobList)
       return res.status(200).json({
         status: "success",
@@ -97,9 +102,7 @@ export async function getJob(req: Request, res: Response) {
 
     res.status(200).json({
       status: "success",
-      data: {
-        job,
-      },
+      data: job,
     });
   } catch (err) {
     res.status(500).json({

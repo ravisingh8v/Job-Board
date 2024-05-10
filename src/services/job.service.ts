@@ -22,8 +22,10 @@ export async function getJobs(
   queryObj: IFilterQuery,
   sortBy: number,
   salaryRange: IFilterSalaryRange,
-  experience: IFilterExperience
+  experience: IFilterExperience,
+  searchText?: any
 ) {
+  console.log(searchText);
   // Query for all the data which is in the jobs collection
   const jobList = await jobs
     .aggregate([
@@ -35,6 +37,20 @@ export async function getJobs(
             $gte: experience.minExperience || DEFAULT_MIN,
             $lte: experience.maxExperience || DEFAULT_MAX,
           },
+          $or: [
+            {
+              title: {
+                $regex: new RegExp(searchText),
+                $options: "i",
+              },
+            },
+            {
+              skills: {
+                $regex: new RegExp(searchText),
+                $options: "i",
+              },
+            },
+          ],
           // maxPackage: {
           //   $gte: salaryRange.minPackage || DEFAULT_MIN,
           //   $lte: salaryRange.maxPackage || DEFAULT_MAX,
@@ -57,12 +73,14 @@ export async function getJobs(
 // exporting list of jobs finding from selected database and collection
 export async function getJobById(id: ObjectId) {
   // Query for all the data which is in the jobs collection
-  // const jobList = await jobs.findOne({ _id: new ObjectId(id) });
   const jobList = await jobs
     .aggregate([
-      ...JOB_AGGREGATE.slice(0, JOB_AGGREGATE.length - 2),
-      { $match: { _id: new ObjectId(id) } },
-      JOB_AGGREGATE[JOB_AGGREGATE.length - 1],
+      ...JOB_AGGREGATE.slice(0, JOB_AGGREGATE.length - 1),
+      {
+        $match: {
+          _id: new ObjectId(id),
+        },
+      },
     ])
     .toArray();
   return jobList[0];
