@@ -81,6 +81,9 @@ export async function getJobById(id: ObjectId) {
           _id: new ObjectId(id),
         },
       },
+      {
+        ...JOB_AGGREGATE[JOB_AGGREGATE.length - 1],
+      },
     ])
     .toArray();
   return jobList[0];
