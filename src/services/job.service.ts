@@ -1,4 +1,4 @@
-import { Collection, Db, ObjectId, Sort } from "mongodb";
+import { Collection, Db, ObjectId } from "mongodb";
 // ==============================================
 import client from "../server/mongo.server";
 import {
@@ -6,12 +6,7 @@ import {
   IFilterQuery,
   IFilterSalaryRange,
 } from "../models/job.model";
-import {
-  DEFAULT_MAX,
-  DEFAULT_MIN,
-  JOB_AGGREGATE,
-  JOB_OBJECT,
-} from "../utilites/contants";
+import { DEFAULT_MAX, DEFAULT_MIN, JOB_AGGREGATE } from "../utilites/contants";
 
 // select database and collection
 const database: Db = client.db("JobBoard");
@@ -25,7 +20,6 @@ export async function getJobs(
   experience: IFilterExperience,
   searchText?: any
 ) {
-  console.log(searchText);
   // Query for all the data which is in the jobs collection
   const jobList = await jobs
     .aggregate([
@@ -51,10 +45,6 @@ export async function getJobs(
               },
             },
           ],
-          // maxPackage: {
-          //   $gte: salaryRange.minPackage || DEFAULT_MIN,
-          //   $lte: salaryRange.maxPackage || DEFAULT_MAX,
-          // },
           minPackage: { $lte: salaryRange.maxPackage || DEFAULT_MAX },
           maxPackage: { $gte: salaryRange.minPackage || DEFAULT_MIN },
         },
