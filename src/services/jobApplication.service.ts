@@ -11,3 +11,10 @@ export async function insertJobApplicationIntoDatabase(
   const application = await applications.insertOne(jobApplication);
   return application;
 }
+export async function getJobApplicationFromDatabase() {
+  const application = await applications
+    .find({})
+    .sort({ createdAt: -1 })
+    .toArray();
+  return application;
+}

@@ -4,6 +4,7 @@ export interface IJobApplication {
   lastName: string;
   contactNumber: string;
   email: string;
+  createdAt: Date;
   cv: IJobCV;
 }
 

@@ -4,10 +4,13 @@ import {
   deleteFromCloudinary,
   uploadOnCloudinary,
 } from "../utilites/cloudinary";
-import fs from "fs";
+import fs, { stat } from "fs";
 import { IJobApplication } from "../models/jobApplication.model";
 import Joi from "joi";
-import { insertJobApplicationIntoDatabase } from "../services/jobApplication.service";
+import {
+  getJobApplicationFromDatabase,
+  insertJobApplicationIntoDatabase,
+} from "../services/jobApplication.service";
 
 // using disk storage to first store data into local
 const storage = multer.diskStorage({
@@ -40,6 +43,12 @@ const schema = Joi.object({
 
 let public_id: any;
 
+/**
+ * POST Job Applications
+ * @param req
+ * @param res
+ * @returns
+ */
 export async function postJobApplication(req: Request, res: Response) {
   const data = req.body;
   const file = req.file;
@@ -81,6 +90,7 @@ export async function postJobApplication(req: Request, res: Response) {
     const application: IJobApplication = {
       ...data,
       contactNumber: data.contactNumber.toString(),
+      createdAt: new Date(),
       cv,
     };
 
@@ -95,6 +105,29 @@ export async function postJobApplication(req: Request, res: Response) {
     res.status(500).json({
       status: "failed",
       message: "Internal server error",
+    });
+  }
+}
+
+export async function getJobApplication(req: Request, res: Response) {
+  const { role } = req.headers;
+  if (role === "admin") {
+    try {
+      const applications = await getJobApplicationFromDatabase();
+      res.status(200).json({
+        status: "success",
+        data: applications,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "failed",
+        message: "Internal server error",
+      });
+    }
+  } else {
+    res.status(401).json({
+      status: "failed",
+      message: "Unauthorized",
     });
   }
 }
