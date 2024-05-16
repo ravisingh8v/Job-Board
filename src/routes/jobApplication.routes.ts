@@ -1,7 +1,10 @@
 import express from "express";
-import { postJobApplication } from "../controller/jobApplication.controller";
+import {
+  postJobApplication,
+  upload,
+} from "../controller/jobApplication.controller";
 const jobApplicationRouter = express.Router();
 
-jobApplicationRouter.route("/").post(postJobApplication);
+jobApplicationRouter.route("/").post(upload.single("cv"), postJobApplication);
 
 export default jobApplicationRouter;
