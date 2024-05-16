@@ -30,8 +30,8 @@ export const upload = multer({ storage });
 // Validation schema : TODO: need to check the jobPostId is already available in the job list
 const schema = Joi.object({
   jobPostId: Joi.string().required(),
-  firstName: Joi.string().alphanum().min(3).max(30).required(),
-  lastName: Joi.string().alphanum().min(3).max(30).required(),
+  firstName: Joi.string().alphanum().min(2).max(30).required(),
+  lastName: Joi.string().alphanum().min(2).max(30).required(),
   email: Joi.string()
     .pattern(new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i))
     .required(),
